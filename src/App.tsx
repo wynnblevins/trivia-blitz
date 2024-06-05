@@ -1,24 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { retrieveToken } from './services/tokenService';
 import './App.css';
+import { GameBoard } from './components/GameBoard';
 
 function App() {
+  const [token, setToken] = useState<string>('');
+  const [tokenRequested, setTokenRequested] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if (!tokenRequested) {
+      initializeGame();
+      setTokenRequested(true);
+    }
+    
+  }, [])
+
+  const initializeGame = async () => {
+    if (!token) {
+      const tokenResponse = await retrieveToken();
+      setToken(tokenResponse)
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <GameBoard token={token}></GameBoard>
     </div>
   );
 }
