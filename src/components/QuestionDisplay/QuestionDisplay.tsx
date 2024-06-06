@@ -22,7 +22,8 @@ const styles = {
 
 interface Props {
   questionObj: QuestionObj | null;
-  onQuestionAnswer: (question: QuestionObj | null, choice: QuestionChoice) => void
+  onQuestionAnswer: (question: QuestionObj | null, choice: QuestionChoice) => void;
+  disableButtons: boolean;
 }
 
 export interface QuestionChoice {  
@@ -31,7 +32,7 @@ export interface QuestionChoice {
 }
 
 const QuestionDisplayBase = (props: Props) => {
-  const { questionObj, classes, onQuestionAnswer } = props;
+  const { questionObj, classes, onQuestionAnswer, disableButtons } = props;
   
   const [questionChoices, setQuestionChoices] = useState<QuestionChoice[]>([]);
   const [questionText, setQuestionText] = useState<string>()
@@ -63,7 +64,7 @@ const QuestionDisplayBase = (props: Props) => {
       {questionChoices.map((possibleAnswer: QuestionChoice) => {
         return (
           <div>
-            <button onClick={() => onQuestionAnswer(questionObj, possibleAnswer)}>
+            <button disabled={disableButtons} onClick={() => onQuestionAnswer(questionObj, possibleAnswer)}>
                 {possibleAnswer.letter}
             </button>: <span>{possibleAnswer.text}</span>
           </div>

@@ -50,14 +50,9 @@ const GameBoard = () => {
     init();
   }, [])
 
-//   useEffect(() => {
-//     if (gameObj.totalQuestions > 0) {
-//       fetchQuestion(token)
-//     }
-//   }, [questionObj?.question])
-
   const onNextClick = () => {
     setShowNextBtn(false);
+    setDisableButtons(false);
     fetchQuestion(token);
     resetClock();
     startTimer();
@@ -81,8 +76,11 @@ const GameBoard = () => {
     // add to the count of incorrect answers
     incrementScore(false);
 
+    // ...disable the answer buttons...  
+    setDisableButtons(true);
+
     // ...and display the next button
-    await setShowNextBtn(true);
+    setShowNextBtn(true);
   };
 
   const onTick = () => {
@@ -142,6 +140,10 @@ const GameBoard = () => {
   };
 
   const onQuestionAnswer = (question: QuestionObj | null, choice: QuestionChoice) => {
+    setDisableButtons(true);
+    timer.stop();
+    setShowNextBtn(true);
+
     if (question?.incorrect_answers.includes(choice.text)) {
       onIncorrectAnswer();
     } else {
@@ -154,7 +156,8 @@ const GameBoard = () => {
       <AppHeader></AppHeader>
       <QuestionDisplay 
         onQuestionAnswer={onQuestionAnswer} 
-        questionObj={questionObj} />
+        questionObj={questionObj} 
+        disableButtons={disableButtons}/>
       <GameStats game={gameObj}></GameStats>
       <h1>{remainingTime}</h1>
       {showNextBtn ? <button type="button" onClick={onNextClick}>Next</button> : <></>}
