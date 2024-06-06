@@ -8,6 +8,7 @@ import useSound from "use-sound";
 import correctSound from '../../audio/correct.mp3';
 import wrongSound from '../../audio/wrong.wav';
 import timesUpSound from '../../audio/timesup.mp3';
+import { createStyles, withStyles } from "@material-ui/core";
 
 export interface Game {
   incorrectAnswers: number;
@@ -15,7 +16,23 @@ export interface Game {
   totalQuestions: number;
 }
 
-const GameBoard = () => {
+const styles = createStyles({
+  resultLabel: {
+    display: 'inline-block',
+    marginRight: '10px'
+  },
+  nextBtn: {
+    marginTop: '15px',
+    marginBottom: '15px'
+  },
+  resultsContainer: { 
+    display: 'flex' 
+  }
+})
+
+const GameBoardBase = (props: any) => {
+  const { classes } = props;
+  
   const FIVE_SECONDS = 5000;
   const [gameObj, setGameObj] = useState<Game>({
     incorrectAnswers: 0,
@@ -28,7 +45,10 @@ const GameBoard = () => {
   const [showNextBtn, setShowNextBtn] = useState<boolean>(false);
   const [disableButtons, setDisableButtons] = useState<boolean>(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(false);
-  
+  const [showTimesUpMessage, setShowTimesUpMessage] = useState<boolean>(false);
+  const [showTimer, setShowTimer] = useState<boolean>(false);
+  const [correctlyAnswered, setCorrectlyAnswered] = useState<boolean>(false);
+
   const [playCorrectSound] = useSound(correctSound);
   const [playWrongSound] = useSound(wrongSound);
   const [playTimesUpSound] = useSound(timesUpSound);
@@ -38,8 +58,6 @@ const GameBoard = () => {
       try {
         const token = await retrieveToken();
         setToken(token);
-        
-        timer.init(onTimeUp, onTick)
         
         await fetchQuestion(token);
       } catch (e: any) {
@@ -55,7 +73,6 @@ const GameBoard = () => {
     setDisableButtons(false);
     fetchQuestion(token);
     resetClock();
-    startTimer();
   };
 
   const startTimer = () => {
@@ -81,10 +98,12 @@ const GameBoard = () => {
 
     // ...and display the next button
     setShowNextBtn(true);
+
+    // ...and show "Times Up!" message
+    setShowTimesUpMessage(true);
   };
 
   const onTick = () => {
-    console.log("tick");
     if (remainingTime > 0) {
       setRemainingTime((remainingTime) => remainingTime - 1);
     } else {
@@ -111,7 +130,11 @@ const GameBoard = () => {
       const question = await requestQuestion(token);
       await setQuestionObj(question);
 
+      setShowTimesUpMessage(false);
       setShowLoadingScreen(false);
+      setShowTimer(true);
+      
+      startTimer();
     } catch (e: any) {
       handleRequestError(e);
     }
@@ -136,11 +159,15 @@ const GameBoard = () => {
   const onCorrectAnswer = () => {
     playCorrectSound();
     incrementScore(true);
+    setShowTimer(false);
+    setCorrectlyAnswered(true);
   };
 
   const onIncorrectAnswer = () => {
     playWrongSound();
     incrementScore(false);
+    setShowTimer(false);
+    setCorrectlyAnswered(false);
   };
 
   const onQuestionAnswer = (question: QuestionObj | null, choice: QuestionChoice) => {
@@ -165,11 +192,20 @@ const GameBoard = () => {
           questionObj={questionObj} 
           disableButtons={disableButtons}/>
         <GameStats game={gameObj}></GameStats>
-        <h1>{remainingTime}</h1>
-        {showNextBtn ? <button type="button" onClick={onNextClick}>Next</button> : <></>}
+        
+        <div className={classes.resultsContainer}>
+          { showTimer ? <>
+            { showTimesUpMessage ? <h1 className={classes.resultLabel}>Times Up!</h1> : <h1>{remainingTime}</h1>}
+          </> : <>
+            { correctlyAnswered ? <h1 className={classes.resultLabel}>Correct!</h1> : <h1 className={classes.resultLabel}>Wrong!</h1> }
+          </>}
+          
+          {showNextBtn ? <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button> : <></>}
+        </div>
       </>}
     </>
   )
 }
 
+const GameBoard = withStyles(styles)(GameBoardBase);
 export { GameBoard };

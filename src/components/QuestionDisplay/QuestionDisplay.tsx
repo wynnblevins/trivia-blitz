@@ -59,7 +59,7 @@ const QuestionDisplayBase = (props: Props) => {
   }, [questionObj])
 
   return <>
-    <p>{questionText}</p>
+    <p dangerouslySetInnerHTML={{ __html: questionText as string | TrustedHTML }} />
     <div className={classes.questionChoices}>
       {questionChoices.map((possibleAnswer: QuestionChoice) => {
         return (
