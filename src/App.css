@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'Jeopardy-Text';
+  src: url('./fonts/jeopardy/gyparody.ttf');
+}
+
+.jeopardy-text {
+  font-family: 'Jeopardy-Text';
+}
+
+
 .background {
   display: flex;
   height: 100vh;
@@ -12,4 +22,8 @@
   margin: 0 auto;
   justify-content: center;
   align-items: center;
+}
+
+p, h1, h2, h3, h4, h5, h6, span {
+  color: white;
 }

@@ -6,6 +6,7 @@ function App() {
   return (
     <section className='background'>
       <div className="content">
+        <h1 className='jeopardy-text'>Trivia Blitz!</h1>
         <GameBoard></GameBoard>
       </div>
     </section>

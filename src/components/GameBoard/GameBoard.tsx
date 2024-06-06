@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { AppHeader } from "../AppHeader/AppHeader";
 import { QuestionChoice, QuestionDisplay } from "../QuestionDisplay";
 import { QuestionObj, requestQuestion } from "../../services/questionService";
 import { GameStats } from "../GameStats";
 import { retrieveToken } from "../../services/tokenService";
 import { timer } from '../../services/timerService';
 import useSound from "use-sound";
-import correctSound from './correct.mp3'
-import wrongSound from './wrong.wav'
-import timesUpSound from '../../audio/timesup.mp3'
+import correctSound from '../../audio/correct.mp3';
+import wrongSound from '../../audio/wrong.wav';
+import timesUpSound from '../../audio/timesup.mp3';
 
 export interface Game {
   incorrectAnswers: number;
@@ -153,7 +152,6 @@ const GameBoard = () => {
 
   return (
     <>
-      <AppHeader></AppHeader>
       <QuestionDisplay 
         onQuestionAnswer={onQuestionAnswer} 
         questionObj={questionObj} 
