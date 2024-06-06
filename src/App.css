@@ -1,8 +1,15 @@
-@font-face {
-  font-family: 'Jeopardy-Text';
-  src: url('./fonts/jeopardy/gyparody.ttf');
+.background {
+  display: flex;
+  height: 100vh;
+  background-image: url('./images/jeopardy_background.jpg');
 }
 
-.jeopardy-text {
-  font-family: 'Jeopardy-Text'
+.content {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
 }
