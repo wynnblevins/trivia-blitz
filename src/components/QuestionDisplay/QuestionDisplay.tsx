@@ -16,7 +16,21 @@ let LETTERS = [
 
 const styles = {
   questionChoices: {
-    listStyleType: 'none'
+    listStyleType: 'none',
+    margin: "0 auto",
+    width: "85%"
+  },
+  questionBox: {
+    marginBottom: "20px"
+  },
+  questionText: {
+    width: "85%",
+    marginBottom: "20px",
+    marginLeft: "20px",
+    marginRight: "20px"
+  },
+  possibleAnswer: {
+    marginLeft: '10px'
   }
 }
 
@@ -58,20 +72,23 @@ const QuestionDisplayBase = (props: Props) => {
     }
   }, [questionObj])
 
-  return <>
-    <p dangerouslySetInnerHTML={{ __html: questionText as string | TrustedHTML }} />
-    <div className={classes.questionChoices}>
-      {questionChoices.map((possibleAnswer: QuestionChoice) => {
-        return (
-          <div>
-            <button disabled={disableButtons} onClick={() => onQuestionAnswer(questionObj, possibleAnswer)}>
-                {possibleAnswer.letter}
-            </button>: <span>{possibleAnswer.text}</span>
-          </div>
-        )
-      })}
+  return (
+    <div className={classes.questionBox}>
+      <h3 className={classes.questionText} dangerouslySetInnerHTML={{ __html: questionText as string | TrustedHTML }} />
+      <div className={classes.questionChoices}>
+        {questionChoices.map((possibleAnswer: QuestionChoice) => {
+          return (
+            <div style={{ marginRight: "25%" }}>
+              <button disabled={disableButtons} onClick={() => onQuestionAnswer(questionObj, possibleAnswer)}>
+                  {possibleAnswer.letter}
+              </button>
+              <span className={classes.possibleAnswer}>{possibleAnswer.text}</span>
+            </div>
+          )
+        })}
+      </div>
     </div>
-  </>
+  )
 };
 
 const QuestionDisplay = withStyles(styles)(QuestionDisplayBase);

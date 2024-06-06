@@ -1,21 +1,30 @@
 import React from "react"
 import { Game } from "../GameBoard";
+import { WithStyles, createStyles, withStyles } from "@material-ui/core";
 
-interface Props {
+interface Props extends WithStyles {
   game: Game
 }
 
-const GameStats = (props: Props) => {
-  const { game } = props;
+const styles = createStyles({
+  stat: {
+    textAlign: 'center'
+  },
+})
+
+const GameStatsBase = (props: Props) => {
+  const { game, classes } = props;
   
   return (
-    <>
-      <p>Correct: {game.correctAnswers}</p>
-      <p>Incorrect: {game.incorrectAnswers}</p>
-      <p>Total: {game.totalQuestions}</p>
-    </>
+    <div>
+      <h2 className={classes.stat}>Stats</h2>
+      <p className={classes.stat}>Correct: {game.correctAnswers}</p>
+      <p className={classes.stat}>Incorrect: {game.incorrectAnswers}</p>
+      <p className={classes.stat}>Total: {game.totalQuestions}</p>
+    </div>
     
   )
 };
 
+const GameStats = withStyles(styles)(GameStatsBase)
 export { GameStats };

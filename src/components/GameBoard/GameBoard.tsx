@@ -8,7 +8,7 @@ import useSound from "use-sound";
 import correctSound from '../../audio/correct.mp3';
 import wrongSound from '../../audio/wrong.wav';
 import timesUpSound from '../../audio/timesup.mp3';
-import { createStyles, withStyles } from "@material-ui/core";
+import { Grid, createStyles, withStyles } from "@material-ui/core";
 
 export interface Game {
   incorrectAnswers: number;
@@ -17,17 +17,32 @@ export interface Game {
 }
 
 const styles = createStyles({
+  loadingMsg: {
+    textAlign: 'center'
+  },
   resultLabel: {
     display: 'inline-block',
-    marginRight: '10px'
+    marginRight: '10px',
+    float: 'right'
+  },
+  correctAnswer: {
+    float: 'left'
   },
   nextBtn: {
+    display: 'inline-block',
     marginTop: '15px',
-    marginBottom: '15px'
+    marginBottom: '15px',
+    marginLeft: '10px'
   },
   resultsContainer: { 
     display: 'flex' 
-  }
+  },
+  questionContainer: { 
+    outline: "1px solid white"
+  },
+  scoreContainer: {
+    outline: "1px solid white"
+  }  
 })
 
 const GameBoardBase = (props: any) => {
@@ -42,7 +57,6 @@ const GameBoardBase = (props: any) => {
   const [questionObj, setQuestionObj] = useState<QuestionObj | null>(null)
   const [token, setToken] = useState('');
   const [remainingTime, setRemainingTime] = useState<number>(20);
-  const [showNextBtn, setShowNextBtn] = useState<boolean>(false);
   const [disableButtons, setDisableButtons] = useState<boolean>(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(false);
   const [showTimesUpMessage, setShowTimesUpMessage] = useState<boolean>(false);
@@ -69,7 +83,6 @@ const GameBoardBase = (props: any) => {
   }, [])
 
   const onNextClick = () => {
-    setShowNextBtn(false);
     setDisableButtons(false);
     fetchQuestion(token);
     resetClock();
@@ -95,9 +108,6 @@ const GameBoardBase = (props: any) => {
 
     // ...disable the answer buttons...  
     setDisableButtons(true);
-
-    // ...and display the next button
-    setShowNextBtn(true);
 
     // ...and show "Times Up!" message
     setShowTimesUpMessage(true);
@@ -127,7 +137,7 @@ const GameBoardBase = (props: any) => {
     try {
       setShowLoadingScreen(true);
 
-      const question = await requestQuestion(token);
+      const question: QuestionObj = await requestQuestion(token);
       await setQuestionObj(question);
 
       setShowTimesUpMessage(false);
@@ -173,7 +183,6 @@ const GameBoardBase = (props: any) => {
   const onQuestionAnswer = (question: QuestionObj | null, choice: QuestionChoice) => {
     setDisableButtons(true);
     timer.stop();
-    setShowNextBtn(true);
 
     if (question?.incorrect_answers.includes(choice.text)) {
       onIncorrectAnswer();
@@ -185,23 +194,72 @@ const GameBoardBase = (props: any) => {
   return (
     <>
       {showLoadingScreen ? <>
-        <h1>Loading Next Question...</h1>
+        <Grid xs={12}>
+          <h1 className={classes.loadingMsg}>Loading Next Question...</h1>
+        </Grid>
       </> : <>
-        <QuestionDisplay 
-          onQuestionAnswer={onQuestionAnswer} 
-          questionObj={questionObj} 
-          disableButtons={disableButtons}/>
-        <GameStats game={gameObj}></GameStats>
-        
-        <div className={classes.resultsContainer}>
-          { showTimer ? <>
-            { showTimesUpMessage ? <h1 className={classes.resultLabel}>Times Up!</h1> : <h1>{remainingTime}</h1>}
-          </> : <>
-            { correctlyAnswered ? <h1 className={classes.resultLabel}>Correct!</h1> : <h1 className={classes.resultLabel}>Wrong!</h1> }
-          </>}
+        <Grid 
+          className={classes.questionContainer}
           
-          {showNextBtn ? <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button> : <></>}
-        </div>
+          md={6} 
+          sm={12} 
+          xs={12}>
+          <QuestionDisplay 
+            onQuestionAnswer={onQuestionAnswer} 
+            questionObj={questionObj} 
+            disableButtons={disableButtons}/>
+        </Grid>
+        <Grid 
+          className={classes.scoreContainer}
+          md={6} 
+          sm={12} 
+          xs={12}>
+          <GameStats game={gameObj}></GameStats>
+        </Grid>
+        
+        <Grid 
+          alignItems="center" 
+          justifyContent="center"
+          xs={12} 
+          className={classes.resultsContainer}>
+          { showTimer ? <>
+            { showTimesUpMessage ? (
+              <>
+                <Grid xs={12} sm={6}>
+                  <h2 className={ classes.resultLabel }>Times Up!</h2>
+                </Grid>
+                <Grid xs={12} sm={6}>
+                  <p className={ classes.correctAnswer }>
+                    (Correct Answer: { questionObj?.correct_answer })
+                  </p>
+                  <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
+                </Grid>
+              </>
+
+            ) : <h2>{remainingTime}</h2>}
+          </> : <>
+            { correctlyAnswered ? 
+              (
+                <>
+                  <h2 className={classes.resultLabel}>Correct!</h2>
+                  <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
+                </>
+              ) : 
+              (
+                <>
+                  <Grid xs={12} sm={6}>
+                    <h2 className={ classes.resultLabel }>Wrong!</h2>
+                  </Grid>
+                  <Grid xs={12} sm={6}>
+                    <p className={ classes.correctAnswer }>
+                      (Correct Answer: { questionObj?.correct_answer })
+                    </p>
+                    <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
+                  </Grid>
+                </>
+              ) }
+          </>}
+        </Grid>
       </>}
     </>
   )
