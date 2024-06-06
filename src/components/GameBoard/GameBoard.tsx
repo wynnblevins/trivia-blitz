@@ -27,6 +27,7 @@ const GameBoard = () => {
   const [remainingTime, setRemainingTime] = useState<number>(20);
   const [showNextBtn, setShowNextBtn] = useState<boolean>(false);
   const [disableButtons, setDisableButtons] = useState<boolean>(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(false);
   
   const [playCorrectSound] = useSound(correctSound);
   const [playWrongSound] = useSound(wrongSound);
@@ -105,8 +106,12 @@ const GameBoard = () => {
 
   const fetchQuestion = async (token: string) => {
     try {
+      setShowLoadingScreen(true);
+
       const question = await requestQuestion(token);
       await setQuestionObj(question);
+
+      setShowLoadingScreen(false);
     } catch (e: any) {
       handleRequestError(e);
     }
@@ -152,13 +157,17 @@ const GameBoard = () => {
 
   return (
     <>
-      <QuestionDisplay 
-        onQuestionAnswer={onQuestionAnswer} 
-        questionObj={questionObj} 
-        disableButtons={disableButtons}/>
-      <GameStats game={gameObj}></GameStats>
-      <h1>{remainingTime}</h1>
-      {showNextBtn ? <button type="button" onClick={onNextClick}>Next</button> : <></>}
+      {showLoadingScreen ? <>
+        <h1>Loading Next Question...</h1>
+      </> : <>
+        <QuestionDisplay 
+          onQuestionAnswer={onQuestionAnswer} 
+          questionObj={questionObj} 
+          disableButtons={disableButtons}/>
+        <GameStats game={gameObj}></GameStats>
+        <h1>{remainingTime}</h1>
+        {showNextBtn ? <button type="button" onClick={onNextClick}>Next</button> : <></>}
+      </>}
     </>
   )
 }
