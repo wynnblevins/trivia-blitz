@@ -31,7 +31,7 @@ export interface QuestionChoice {
 }
 
 const QuestionDisplayBase = (props: Props) => {
-  const { questionObj, onQuestionAnswer, classes } = props;
+  const { questionObj, classes, onQuestionAnswer } = props;
   
   const [questionChoices, setQuestionChoices] = useState<QuestionChoice[]>([]);
   const [questionText, setQuestionText] = useState<string>()

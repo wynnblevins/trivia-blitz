@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import { AppHeader } from "../AppHeader/AppHeader";
 import { QuestionChoice, QuestionDisplay } from "../QuestionDisplay";
 import { QuestionObj, requestQuestion } from "../../services/questionService";
+import { GameStats } from "../GameStats";
+import { retrieveToken } from "../../services/tokenService";
+import { timer } from '../../services/timerService';
+import useSound from "use-sound";
+import correctSound from './correct.mp3'
+import wrongSound from './wrong.wav'
+import timesUpSound from '../../audio/timesup.mp3'
 
 export interface Game {
   incorrectAnswers: number;
@@ -9,30 +16,102 @@ export interface Game {
   totalQuestions: number;
 }
 
-interface Props {
-  token: string
-}
-
-const GameBoard = (props: Props) => {
+const GameBoard = () => {
+  const FIVE_SECONDS = 5000;
   const [gameObj, setGameObj] = useState<Game>({
     incorrectAnswers: 0,
     correctAnswers: 0,
     totalQuestions: 0,
   });
   const [questionObj, setQuestionObj] = useState<QuestionObj | null>(null)
-  const [questionRequested, setQuestionRequested] = useState<boolean>(false);
-
-  const { token } = props;
+  const [token, setToken] = useState('');
+  const [remainingTime, setRemainingTime] = useState<number>(20);
+  const [showNextBtn, setShowNextBtn] = useState<boolean>(false);
+  const [disableButtons, setDisableButtons] = useState<boolean>(false);
+  
+  const [playCorrectSound] = useSound(correctSound);
+  const [playWrongSound] = useSound(wrongSound);
+  const [playTimesUpSound] = useSound(timesUpSound);
 
   useEffect(() => {
-    fetchQuestion();
-  }, [token])
+    const init = async () => {
+      try {
+        const token = await retrieveToken();
+        setToken(token);
+        
+        timer.init(onTimeUp, onTick)
+        
+        await fetchQuestion(token);
+      } catch (e: any) {
+        handleRequestError(e);
+      }
+    }
 
-  const fetchQuestion = async () => {
-    if (token && !questionRequested) {
+    init();
+  }, [])
+
+//   useEffect(() => {
+//     if (gameObj.totalQuestions > 0) {
+//       fetchQuestion(token)
+//     }
+//   }, [questionObj?.question])
+
+  const onNextClick = () => {
+    setShowNextBtn(false);
+    fetchQuestion(token);
+    resetClock();
+    startTimer();
+  };
+
+  const startTimer = () => {
+    timer.resetCount();
+    timer.init(onTimeUp, onTick);
+  }
+
+  const resetClock = () => {
+    timer.stop();
+    timer.resetCount();
+    setRemainingTime(20);
+  };
+
+  const onTimeUp = async () => {
+    playTimesUpSound();
+    resetClock();
+    
+    // add to the count of incorrect answers
+    incrementScore(false);
+
+    // ...and display the next button
+    await setShowNextBtn(true);
+  };
+
+  const onTick = () => {
+    console.log("tick");
+    if (remainingTime > 0) {
+      setRemainingTime((remainingTime) => remainingTime - 1);
+    } else {
+      onTimeUp();
+    }
+  };
+
+  const handleRequestError = (e: any) => {
+    // if we've sent too many requests over too short a perios of time...
+    if (e.response?.status === 429) {
+      setTimeout(() => {
+        // then try again in five seconds
+        fetchQuestion(token);
+      }, FIVE_SECONDS)
+    } else {
+      console.error(`encountered request error, status code was ${e.response?.status}`);
+    }
+  };
+
+  const fetchQuestion = async (token: string) => {
+    try {
       const question = await requestQuestion(token);
-      setQuestionRequested(true);
-      setQuestionObj(question);
+      await setQuestionObj(question);
+    } catch (e: any) {
+      handleRequestError(e);
     }
   };
 
@@ -46,19 +125,19 @@ const GameBoard = (props: Props) => {
     } else {
       setGameObj({ 
         ...gameObj,
-        incorrectAnswers: ++gameObj.correctAnswers,
+        incorrectAnswers: ++gameObj.incorrectAnswers,
         totalQuestions: ++gameObj.totalQuestions
       })
     }
   };
 
   const onCorrectAnswer = () => {
-    console.log('Correct');
+    playCorrectSound();
     incrementScore(true);
   };
 
   const onIncorrectAnswer = () => {
-    console.log('Incorrect');
+    playWrongSound();
     incrementScore(false);
   };
 
@@ -73,7 +152,12 @@ const GameBoard = (props: Props) => {
   return (
     <>
       <AppHeader></AppHeader>
-      <QuestionDisplay onQuestionAnswer={onQuestionAnswer} questionObj={questionObj}></QuestionDisplay>
+      <QuestionDisplay 
+        onQuestionAnswer={onQuestionAnswer} 
+        questionObj={questionObj} />
+      <GameStats game={gameObj}></GameStats>
+      <h1>{remainingTime}</h1>
+      {showNextBtn ? <button type="button" onClick={onNextClick}>Next</button> : <></>}
     </>
   )
 }
