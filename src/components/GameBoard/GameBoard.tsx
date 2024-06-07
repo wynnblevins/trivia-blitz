@@ -238,28 +238,19 @@ const GameBoardBase = (props: any) => {
                 justifyContent="center">
             { correctlyAnswered ? 
               (
-                // <Grid container 
-                //   alignItems="center" 
-                //   justifyContent="center">
-                  <Grid item>
-                    <h2>Correct!</h2>  
-                  </Grid>
-                // </Grid> 
-                
+                <Grid item>
+                  <h2>Correct!</h2>  
+                </Grid>
               ) : 
               (
-                // <Grid container 
-                //   alignItems="center" 
-                //   justifyContent="center">
-                  <Grid item>
-                    <h2>Wrong</h2>  
-                  </Grid>
-                // </Grid>
+                <Grid item>
+                  <h2>Wrong</h2>  
+                </Grid>
               )}
           </Grid>
           </>}
         </Grid>
-        { !showTimer ? (
+        { !showTimer || showTimesUpMessage ? (
             <>
               <Grid container 
                 alignItems="center" 
