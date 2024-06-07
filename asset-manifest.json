@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/trivia-blitz/static/css/main.9acb4166.css",
-    "main.js": "/trivia-blitz/static/js/main.ae08c319.js",
+    "main.js": "/trivia-blitz/static/js/main.5893dc01.js",
     "static/js/885.7886a224.chunk.js": "/trivia-blitz/static/js/885.7886a224.chunk.js",
     "static/js/453.cf2593e9.chunk.js": "/trivia-blitz/static/js/453.cf2593e9.chunk.js",
     "static/media/jeopardy_background.jpg": "/trivia-blitz/static/media/jeopardy_background.bec09d91d596057fd792.jpg",
@@ -11,12 +11,12 @@
     "static/media/timesup.mp3": "/trivia-blitz/static/media/timesup.4cd6cceec250f2602135.mp3",
     "index.html": "/trivia-blitz/index.html",
     "main.9acb4166.css.map": "/trivia-blitz/static/css/main.9acb4166.css.map",
-    "main.ae08c319.js.map": "/trivia-blitz/static/js/main.ae08c319.js.map",
+    "main.5893dc01.js.map": "/trivia-blitz/static/js/main.5893dc01.js.map",
     "885.7886a224.chunk.js.map": "/trivia-blitz/static/js/885.7886a224.chunk.js.map",
     "453.cf2593e9.chunk.js.map": "/trivia-blitz/static/js/453.cf2593e9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.9acb4166.css",
-    "static/js/main.ae08c319.js"
+    "static/js/main.5893dc01.js"
   ]
 }
