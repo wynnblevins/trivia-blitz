@@ -224,42 +224,61 @@ const GameBoardBase = (props: any) => {
           className={classes.resultsContainer}>
           { showTimer ? <>
             { showTimesUpMessage ? (
-              <>
-                <Grid xs={12} sm={6}>
+              <Grid container 
+                alignItems="center" 
+                justifyContent="center">
+                <Grid item>
                   <h2 className={ classes.resultLabel }>Times Up!</h2>
                 </Grid>
-                <Grid xs={12} sm={6}>
-                  <p className={ classes.correctAnswer }>
-                    (Correct Answer: { questionObj?.correct_answer })
-                  </p>
-                  <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
-                </Grid>
-              </>
-
+              </Grid>
             ) : <h2>{remainingTime}</h2>}
           </> : <>
+          <Grid container 
+                alignItems="center" 
+                justifyContent="center">
             { correctlyAnswered ? 
               (
-                <>
-                  <h2 className={classes.resultLabel}>Correct!</h2>
-                  <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
-                </>
+                // <Grid container 
+                //   alignItems="center" 
+                //   justifyContent="center">
+                  <Grid item>
+                    <h2>Correct!</h2>  
+                  </Grid>
+                // </Grid> 
+                
               ) : 
               (
-                <>
-                  <Grid xs={12} sm={6}>
-                    <h2 className={ classes.resultLabel }>Wrong!</h2>
+                // <Grid container 
+                //   alignItems="center" 
+                //   justifyContent="center">
+                  <Grid item>
+                    <h2>Wrong</h2>  
                   </Grid>
-                  <Grid xs={12} sm={6}>
-                    <p className={ classes.correctAnswer }>
-                      (Correct Answer: { questionObj?.correct_answer })
-                    </p>
-                    <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
-                  </Grid>
-                </>
-              ) }
+                // </Grid>
+              )}
+          </Grid>
           </>}
         </Grid>
+        { !showTimer ? (
+            <>
+              <Grid container 
+                alignItems="center" 
+                justifyContent="center">
+                <Grid item>
+                  <button className={classes.nextBtn} type="button" onClick={onNextClick}>Next</button>  
+                </Grid>
+              </Grid> 
+              <Grid container 
+                alignItems="center"
+                justifyContent="center">
+                <Grid item>
+                  <p className={ classes.correctAnswer }>
+                      (Correct Answer: { questionObj?.correct_answer })
+                  </p>
+                </Grid>
+              </Grid>
+            </>
+          ) : <></>}
       </>}
     </>
   )
